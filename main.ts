@@ -2,23 +2,23 @@ input.onButtonPressed(Button.A, function () {
     dot.change(LedSpriteProperty.X, -1)
 })
 input.onButtonPressed(Button.AB, function () {
-    list.push(game.createSprite(dot.get(LedSpriteProperty.X), dot.get(LedSpriteProperty.Y) - 1))
+    a_bullets.push(game.createSprite(dot.get(LedSpriteProperty.X), dot.get(LedSpriteProperty.Y) - 1))
 })
 input.onButtonPressed(Button.B, function () {
     dot.change(LedSpriteProperty.X, 1)
 })
-let list: game.LedSprite[] = []
+let a_bullets: game.LedSprite[] = []
 let dot: game.LedSprite = null
 dot = game.createSprite(2, 4)
-list = []
+a_bullets = []
 loops.everyInterval(500, function () {
-    for (let value of list) {
-        if (value.get(LedSpriteProperty.Y) == 0) {
-            value.delete()
-            list.removeAt(list.indexOf(value))
+    for (let bullet of a_bullets) {
+        if (bullet.get(LedSpriteProperty.Y) == 0) {
+            bullet.delete()
+            a_bullets.removeAt(a_bullets.indexOf(bullet))
         }
-        if (!(value.isDeleted())) {
-            value.change(LedSpriteProperty.Y, -1)
+        if (!(bullet.isDeleted())) {
+            bullet.change(LedSpriteProperty.Y, -1)
         }
     }
 })
