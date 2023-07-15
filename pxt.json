@@ -1,5 +1,5 @@
 {
-    "name": "Prvi",
+    "name": "game",
     "description": "",
     "dependencies": {
         "core": "*",
