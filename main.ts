@@ -13,15 +13,17 @@ input.onButtonPressed(Button.B, function () {
 })
 let a_bullets: game.LedSprite[] = []
 let dot: game.LedSprite = null
-serial.redirectToUSB()
 serial.setBaudRate(BaudRate.BaudRate115200)
-serial.writeLine("Game Start")
+serial.redirectToUSB()
+serial.writeString("Game Start")
 dot = game.createSprite(2, 4)
 a_bullets = []
 let a_enemies: game.LedSprite[] = []
 let life = 3
 let score = 0
 let level = 0
+let tmp_level = 0
+let play = true
 // Check if Enemy has reached the bottom. 
 loops.everyInterval(1000, function () {
     for (let enemy of a_enemies) {
@@ -45,7 +47,6 @@ loops.everyInterval(10, function () {
                 bullet.delete()
                 a_bullets.removeAt(a_bullets.indexOf(bullet))
                 score += 1
-                level = score / 10
             }
         }
     }
@@ -67,17 +68,21 @@ loops.everyInterval(500, function () {
     }
 })
 // Create Enemy every 3 seconds.
-loops.everyInterval(3000, function () {
-    a_enemies.push(game.createSprite(randint(0, 4), -1))
-    basic.pause(500)
+loops.everyInterval(2000, function () {
+    if (play) {
+        a_enemies.push(game.createSprite(randint(0, 4), -1))
+        basic.pause(1000)
+    }
 })
 // Create Enemy every 3 seconds.
 loops.everyInterval(100, function () {
-    if (score % 10 == 0 && level != 0) {
-        game.pause()
+    level = score / 10
+    if (score % 10 == 0 && level != tmp_level) {
+        play = false
+        tmp_level += 1
+        serial.writeString("" + (tmp_level))
         basic.showString("Level")
-        basic.showNumber(level)
-        basic.pause(1000)
-        game.resume()
+        basic.showNumber(tmp_level)
+        play = true
     }
 })
