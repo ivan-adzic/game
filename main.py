@@ -29,6 +29,9 @@ a_enemies: List[game.LedSprite] = []
 life = 3
 score = 0
 level = 0
+tmp_level = 0
+play = True
+speed = 0
 # Check if Enemy has reached the bottom. 
 
 def on_every_interval():
@@ -42,10 +45,18 @@ def on_every_interval():
             enemy.change(LedSpriteProperty.Y, 1)
 loops.every_interval(1000, on_every_interval)
 
-# Check if Bullet has hit the Enemy.
+# Create Enemy every 3 seconds.
 
 def on_every_interval2():
-    global score, level
+    if play:
+        a_enemies.append(game.create_sprite(randint(0, 4), -1))
+        basic.pause(1000)
+loops.every_interval(2000 - speed * 100, on_every_interval2)
+
+# Check if Bullet has hit the Enemy.
+
+def on_every_interval3():
+    global score
     for bullet in a_bullets:
         for enemy2 in a_enemies:
             if bullet.is_touching(enemy2):
@@ -54,38 +65,33 @@ def on_every_interval2():
                 bullet.delete()
                 a_bullets.remove_at(a_bullets.index(bullet))
                 score += 1
-                level = score / 10
-                serial.write_string("" + str((level)))
     if life <= 0:
         game.set_score(score)
         game.game_over()
-loops.every_interval(10, on_every_interval2)
+loops.every_interval(10, on_every_interval3)
 
 # Check if bullet is out of the screen, if yes delete Bullet from the list.
 
-def on_every_interval3():
+def on_every_interval4():
     for bullet2 in a_bullets:
         if bullet2.get(LedSpriteProperty.Y) == 0:
             bullet2.delete()
             a_bullets.remove_at(a_bullets.index(bullet2))
         if not (bullet2.is_deleted()):
             bullet2.change(LedSpriteProperty.Y, -1)
-loops.every_interval(500, on_every_interval3)
-
-# Create Enemy every 3 seconds.
-
-def on_every_interval4():
-    a_enemies.append(game.create_sprite(randint(0, 4), -1))
-    basic.pause(500)
-loops.every_interval(3000, on_every_interval4)
+loops.every_interval(500, on_every_interval4)
 
 # Create Enemy every 3 seconds.
 
 def on_every_interval5():
-    if score % 10 == 0 and level != 0:
-        game.pause()
+    global level, play, tmp_level, speed
+    level = score / 10
+    if score % 10 == 0 and level != tmp_level:
+        play = False
+        tmp_level += 1
+        speed += 1
+        serial.write_string("" + str((tmp_level)))
         basic.show_string("Level")
-        basic.show_number(level)
-        basic.pause(1000)
-        game.resume()
+        basic.show_number(tmp_level)
+        play = True
 loops.every_interval(100, on_every_interval5)
